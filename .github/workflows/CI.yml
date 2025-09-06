@@ -22,24 +22,14 @@ jobs:
           docker login -u ${{secrets.REGISTRY_USER}} -p ${{secrets.REGISTRY_PASS}}
           docker push ${{secrets.REGISTRY_USER}}/w8-resumecode-project
       
-name: Build and Push Docker to ECR
-
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch: {}
-
+      - name: Build and Push Docker to ECR
 env:
   AWS_REGION: us-east-1
   ECR_REGISTRY: 515966511128.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: resumecode-project
   IMAGE_TAG: latest
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-
-    steps:
+steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
