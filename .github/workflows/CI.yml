@@ -21,4 +21,48 @@ jobs:
         run: |
           docker login -u ${{secrets.REGISTRY_USER}} -p ${{secrets.REGISTRY_PASS}}
           docker push ${{secrets.REGISTRY_USER}}/w8-resumecode-project
+      
+name: Build and Push Docker to ECR
 
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 515966511128.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: resumecode-project
+  IMAGE_TAG: latest
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}          # <-- tes secrets AWS
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # <-- tes secrets AWS
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | \
+          docker login --username AWS --password-stdin $ECR_REGISTRY
+
+      - name: Build Docker image
+        run: |
+          docker build -t $ECR_REPOSITORY .
+
+      - name: Tag Docker image
+        run: |
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
