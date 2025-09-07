@@ -17,16 +17,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
       - uses: actions/checkout@v4
 
+# --- Docker Hub ---
       - name: Build image
-        run: docker build -t ${{secrets.REGISTRY_USER}}/w8-resumecode-project .
+        run: docker build -t ${{secrets.REGISTRY_USER}}/w8-resumecode-project:$IMAGE_TAG .
 
       - name: Push image
         run: |
           docker login -u ${{secrets.REGISTRY_USER}} -p ${{secrets.REGISTRY_PASS}}
-          docker push ${{secrets.REGISTRY_USER}}/w8-resumecode-project
-  
+          docker push ${{secrets.REGISTRY_USER}}/w8-resumecode-project:$IMAGE_TAG
+
+  # --- AWS ECR ---
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}          # <-- tes secrets AWS
