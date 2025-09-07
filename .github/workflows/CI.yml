@@ -7,12 +7,17 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+   AWS_REGION: us-east-1
+   ECR_REGISTRY: 515966511128.dkr.ecr.us-east-1.amazonaws.com
+   ECR_REPOSITORY: resumecode-project
+   IMAGE_TAG: latest
+
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
       - uses: actions/checkout@v4
       - name: Build image
         run: docker build -t ${{secrets.REGISTRY_USER}}/w8-resumecode-project .
@@ -21,15 +26,9 @@ jobs:
         run: |
           docker login -u ${{secrets.REGISTRY_USER}} -p ${{secrets.REGISTRY_PASS}}
           docker push ${{secrets.REGISTRY_USER}}/w8-resumecode-project
-      
-      - name: Build and Push Docker to ECR
-env:
-  AWS_REGION: us-east-1
-  ECR_REGISTRY: 515966511128.dkr.ecr.us-east-1.amazonaws.com
-  ECR_REPOSITORY: resumecode-project
-  IMAGE_TAG: latest
+  
 
-steps:
+  steps:
       - uses: actions/checkout@v4
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
