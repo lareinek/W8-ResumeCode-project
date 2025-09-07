@@ -28,7 +28,6 @@ jobs:
           docker push ${{secrets.REGISTRY_USER}}/w8-resumecode-project
   
   steps:
-      - uses: actions/checkout@v4
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}          # <-- tes secrets AWS
