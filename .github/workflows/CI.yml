@@ -20,6 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+
 # --- Docker Hub ---
       - name: Build image
         run: docker build -t ${{secrets.REGISTRY_USER}}/w8-resumecode-project:$IMAGE_TAG .
